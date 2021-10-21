@@ -75,7 +75,7 @@ export default function Filters() {
       setSelectedFilter(_filter);
       let updatedQuery: TableFilter = {
         key: selectedColumn.key,
-        operator: _filter.operators[0].value,
+        operator: _filter.operators[0]?.value,
         value: _filter.defaultValue,
       };
       setQuery(updatedQuery);
@@ -108,6 +108,8 @@ export default function Filters() {
   const { control } = useForm({
     mode: "onBlur",
   });
+  console.log(getFieldProp("filter.customInput" as any, type));
+  console.log(getFieldProp("SideDrawerField" as any, type));
   return (
     <>
       <Grid container direction="row" wrap="nowrap" style={{ width: "auto" }}>
@@ -202,67 +204,82 @@ export default function Filters() {
                 ))}
               </TextField>
             </Grid>
-
-            <Grid item xs={4}>
-              <TextField
-                label="Condition"
-                select
-                variant="filled"
-                hiddenLabel
-                fullWidth
-                value={query.operator}
-                disabled={!query.key || selectedFilter?.operators?.length === 0}
-                onChange={(e) => {
-                  setQuery((query) => ({
-                    ...query,
-                    operator: e.target.value as string,
-                  }));
-                }}
-                SelectProps={{ displayEmpty: true }}
-              >
-                <MenuItem disabled value="" style={{ display: "none" }}>
-                  Select condition
-                </MenuItem>
-                {selectedFilter?.operators.map((operator) => (
-                  <MenuItem key={operator.value} value={operator.value}>
-                    {operator.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              {query.key && query.operator && (
-                <form>
-                  <InputLabel
+            {!getFieldProp("filter.customInput" as any, type) ? (
+              <>
+                <Grid item xs={4}>
+                  <TextField
+                    label="Condition"
+                    select
                     variant="filled"
-                    id={`filters-label-${query.key}`}
-                    htmlFor={`sidedrawer-field-${query.key}`}
-                  >
-                    Value
-                  </InputLabel>
-
-                  <FormAutosave
-                    control={control}
-                    handleSave={(values) =>
+                    hiddenLabel
+                    fullWidth
+                    value={query.operator}
+                    disabled={
+                      !query.key || selectedFilter?.operators?.length === 0
+                    }
+                    onChange={(e) => {
                       setQuery((query) => ({
                         ...query,
-                        value: values[query.key],
-                      }))
-                    }
-                  />
-                  <Suspense fallback={<FieldSkeleton />}>
-                    {query.operator &&
-                      createElement(getFieldProp("SideDrawerField", type), {
-                        column: selectedColumn,
-                        control,
-                        docRef: {},
-                        disabled: false,
-                        handleChange: () => {},
-                      })}
-                  </Suspense>
-                </form>
-              )}
-            </Grid>
+                        operator: e.target.value as string,
+                      }));
+                    }}
+                    SelectProps={{ displayEmpty: true }}
+                  >
+                    <MenuItem disabled value="" style={{ display: "none" }}>
+                      Select condition
+                    </MenuItem>
+                    {selectedFilter?.operators.map((operator) => (
+                      <MenuItem key={operator.value} value={operator.value}>
+                        {operator.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={4}>
+                  {query.key && query.operator && (
+                    <form>
+                      <InputLabel
+                        variant="filled"
+                        id={`filters-label-${query.key}`}
+                        htmlFor={`sidedrawer-field-${query.key}`}
+                      >
+                        Value
+                      </InputLabel>
+
+                      <FormAutosave
+                        control={control}
+                        handleSave={(values) =>
+                          setQuery((query) => ({
+                            ...query,
+                            value: values[query.key],
+                          }))
+                        }
+                      />
+                      <Suspense fallback={<FieldSkeleton />}>
+                        {query.operator &&
+                          createElement(getFieldProp("SideDrawerField", type), {
+                            column: selectedColumn,
+                            control,
+                            docRef: {},
+                            disabled: false,
+                            handleChange: () => {},
+                          })}
+                      </Suspense>
+                    </form>
+                  )}
+                </Grid>
+              </>
+            ) : (
+              <Suspense fallback={<FieldSkeleton />}>
+                {createElement(
+                  getFieldProp("filter.customInput" as any, type),
+                  {
+                    column: selectedColumn,
+                    handleChange: () => {},
+                  }
+                )}
+              </Suspense>
+            )}
           </Grid>
           <Grid
             container

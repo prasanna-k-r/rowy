@@ -6,6 +6,9 @@ import StatusIcon from "assets/icons/Status";
 import BasicCell from "../_BasicCell/BasicCellNull";
 import NullEditor from "components/Table/editors/NullEditor";
 
+const CustomFilter = lazy(
+  () => import("./Filter" /* webpackChunkName: "CustomFilter-Status" */)
+);
 const TableCell = lazy(
   () => import("./TableCell" /* webpackChunkName: "TableCell-Status" */)
 );
@@ -29,6 +32,10 @@ export const config: IFieldConfig = {
   TableCell: withHeavyCell(BasicCell, TableCell),
   TableEditor: NullEditor as any,
   settings: Settings,
+  filter: {
+    operators: [],
+    customInput: CustomFilter,
+  },
   SideDrawerField,
   requireConfiguration: true,
 };

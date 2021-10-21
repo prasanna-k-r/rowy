@@ -6,7 +6,6 @@ import _find from "lodash/find";
 
 export default function Status({ column, value }: IHeavyCellProps) {
   const statusClasses = useStatusStyles();
-
   const conditions = column.config?.conditions ?? [];
   const label = useMemo(() => {
     if (["null", "undefined"].includes(typeof value)) {
